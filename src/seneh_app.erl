@@ -15,6 +15,8 @@
 %%====================================================================
 
 start(_StartType, _StartArgs) ->
+    net_kernel:start([seneh, longnames]),
+    io:format("seneh_app starting...~nNode name: ~p, Cookie: ~p", [node(), erlang:get_cookie()]),
     seneh_sup:start_link().
 
 %%--------------------------------------------------------------------
