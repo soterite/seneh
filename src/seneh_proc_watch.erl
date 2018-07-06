@@ -2,7 +2,7 @@
 
 -export([init/1, patrol/1, terminate/1, check/1]).
 
--define(FREQ, 10000).
+-define(FREQ, 1000 * 60 * 1).
 -define(PS_CMD, "ps -xo cmd").
 -define(S2_TUNEL, [
 {"ssh -o TCPKeepAlive=yes -N -R 19721:localhost:8080 mroq@s2.mydevil.net &",
@@ -34,7 +34,7 @@ patrol(State) ->
     end.
 
 check(Process) ->
-    string:find(?PS_CMD, Process).
+    string:find(os:cmd(?PS_CMD), Process).
 
 terminate(State) ->
     EHPid = proplists:get_value(eventHandler_pid, State),
