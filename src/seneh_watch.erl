@@ -9,6 +9,8 @@
 -behaviour(gen_server).
 
 start_link() ->             % to jest wołane przez proces nadrzedny
+    %% Okpid = {ok, Pid} =
+    io:format("werwqr"),
     Okpid =
     gen_server:start_link(
         {local, ?MODULE},   % locally/globaly regisered under the name ?MODULE
