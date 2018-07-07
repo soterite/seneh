@@ -31,13 +31,19 @@ start_link() ->
 init([]) ->
     WatcherChild = #{id     => watcher, % to jest wewnetrzny identyfikator supervisora - Obowiazkowy
                      start  => {seneh_watch, start_link, []}, % funkcja startująca childa. Obowiazkowa. Chyba może być (powinno?) to tylko start_link
-                     restart => permanent, % opcjonalnie i defaultowo. Może też być temporary (never restarted) lub transient (restarted gdy exit reason inny niż normal
+                     restart => permanent, % opcjonalnie i defaultowo. Może też być temporary (never restarted)
+                                           % lub transient (restarted gdy exit reason inny niż normal
                      shutdown => 5000, % defaultowo i opcjonalnie. Najpierw exit(Child, shutdown) a po milisekundach exit(Child kill).
                                        % inne: brutal_kill (zawsze uzywa exit(Child, kill)) albo
                                        % infinity (default jeśli type jest supervisor). Tylko exit(Child, shutdown)
                      type => worker, % defaultowo. Może też być supervisor
                      modules => [seneh_watch]},
-    {ok, { {one_for_all, 0, 1}, [WatcherChild]} }.
+
+    SupFlags = #{strategy => one_for_one,
+                 intensity => 1,        % dziiecko moze sie maksymalnie zrestartowac tyle razy (MaxR)
+                 period => 1},          % w jednej sekundzie (MaxT).
+
+    {ok, { SupFlags, [WatcherChild]} }.
 
 %%====================================================================
 %% Internal functions
