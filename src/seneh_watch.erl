@@ -91,6 +91,6 @@ animate_watchdog(Pid) ->
                             Pid ! {self(), terminated}
     after ?FREQ ->
         Effects = ?MODULE:check(),
-        io:format("watchdog run and guess what? That: ~p~n", [Effects]),
+        io:format("watchdog at ~p~p: ~p~n", [erlang:date(), erlang:time(), Effects]),
         animate_watchdog(Pid)
     end.
