@@ -30,7 +30,7 @@ start_link() ->
 %% Child :: {Id,StartFunc,Restart,Shutdown,Type,Modules}
 init([]) ->
     WatcherChild = #{id     => watcher, % to jest wewnetrzny identyfikator supervisora - Obowiazkowy
-                     start  => {seneh_watch, start_link, [self()]}, % funkcja startująca childa. Obowiazkowa. Chyba może być (powinno?) to tylko start_link
+                     start  => {seneh_watch, start, [self()]}, % funkcja startująca childa. Obowiazkowa. Chyba może być (powinno?) to tylko start_link
                      restart => permanent, % opcjonalnie i defaultowo. Może też być temporary (never restarted)
                                            % lub transient (restarted gdy exit reason inny niż normal
                      shutdown => 5000, % defaultowo i opcjonalnie. Najpierw exit(Child, shutdown) a po milisekundach exit(Child kill).

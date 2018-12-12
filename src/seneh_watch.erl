@@ -1,6 +1,6 @@
 -module(seneh_watch).
 
--export([start_link/1,
+-export([start/1,
          init/1,
          handle_call/3,
          handle_cast/2,
@@ -28,7 +28,7 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% API %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 shutdown() ->
-    gen_server:call(?MODULE, terminate).
+    gen_server:call(?MODULE, stop).
 
 info() ->
     gen_server:call(?MODULE, info).
@@ -36,9 +36,9 @@ info() ->
 check() ->
     gen_server:call(?MODULE, check).
 
--spec start_link(pid()) -> pid().
-start_link(Pid) ->             % to jest wołane przez proces nadrzedny
-    io:format("seneh_watch starting...supervisor: ~p~n", [Pid]),
+-spec start(pid()) -> pid().
+start(Pid) ->             % to jest wołane przez proces nadrzedny
+    io:format("seneh_watch starting...~nprocess: ~p~nsupervisor: ~p~n", [self(), Pid]),
     gen_server:start_link(
         {local, ?MODULE},   % locally/globaly regisered under the name ?MODULE
         ?MODULE,            % nazwa modułu, w którym są funkcje callback - zwykle ten sam po prostu
@@ -50,8 +50,8 @@ init(EHPid) ->
     {ok, #state{eventHandler_pid = EHPid,
                 watchdog_pid = Watchdog_Pid}}.
 
-handle_call(terminate, _From, State) ->
-    {stop, terminated, State};
+handle_call(stop, _From, State) ->
+    {stop, normal, State};
 
 handle_call(info, _From, State) ->
     {reply, {State, ?MODULE:module_info(attributes)}, State};
