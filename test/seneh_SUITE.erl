@@ -1,13 +1,14 @@
 -module(seneh_SUITE).
 -include_lib("common_test/include/ct.hrl").
+-include("../src/seneh_hdr.hrl").
 
 -export([all/0]).
 
--export([starting_stopping/1,
-         is_tunnel_alive/1]).
+-export([starting_stopping/1
+       , logger_run/1]).
 
 all() -> [starting_stopping
-          , is_tunnel_alive].
+        , logger_run].
 
 starting_stopping(_Config) ->
     application:start(seneh),
@@ -15,14 +16,24 @@ starting_stopping(_Config) ->
     application:stop(seneh),
     ct:pal("starting_stopping FINISHED").
 
-is_tunnel_alive(_Config) ->
-    ct:pal("is_tunnel_alive starting..."),
-    Myself = self(),
-    application:start(seneh),
-    seneh_watch:call(self(), ssh_tunnel_status),
-    receive
-        {Myself, Any} -> ct:pal("server_watch returned: ~w", [Any]),
-                         Any = {ok, tunnel_alive}
-    end,
-    application:stop(seneh),
-    ct:pal("is_tunnel_alive FINISHED").
+logger_run(_Config) ->
+    meck:new(file, [unstick, passthrough]),
+    meck:expect(file, open, fun(File,Arg2) ->
+                                ct:pal("Application opens the file: ~p", [File]),
+                                meck:passthrough(File, Arg2)
+                            end),
+    meck:expect(file, close, fun(File) ->
+                                ct:pal("Application closes the file: ~p", [File]),
+                                meck:passthrough(File)
+                             end),
+
+    LogItem = "Now something different",
+    meck:expect(file, write, fun(Where, Msg) ->
+                                {match, _} = re:run(Msg, LogItem),
+                                meck:passthrough(Where, Msg)
+                             end),
+
+    seneh_log:start_logger(),
+    seneh_log:log_normal(LogItem),  % should fail if not the same is being written
+
+    meck:unload(file).
