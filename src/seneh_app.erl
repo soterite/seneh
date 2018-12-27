@@ -15,7 +15,8 @@
 %%====================================================================
 
 start(_StartType, _StartArgs) ->
-    io:format("seneh_app starting...~nNode name: ~p, Cookie: ~p~n", [node(), erlang:get_cookie()]),
+    seneh_log:start_logger(),
+    seneh_log:log_normal("seneh_app starting...~nNode name: ~p, Cookie: ~p~n", [node(), erlang:get_cookie()]),
     seneh_sup:start_link().
 
 %%--------------------------------------------------------------------

@@ -20,7 +20,7 @@
 %%====================================================================
 
 start_link() ->
-    io:format("seneh_sup starting...~n"),
+    seneh_log:log_normal("seneh_sup starting...~n"),
     supervisor:start_link({local, ?SERVER}, ?MODULE, []).
 
 %%====================================================================
@@ -29,6 +29,7 @@ start_link() ->
 
 %% Child :: {Id,StartFunc,Restart,Shutdown,Type,Modules}
 init([]) ->
+
     WatcherChild = #{id     => watcher, % to jest wewnetrzny identyfikator supervisora - Obowiazkowy
                      start  => {seneh_watch, start, [self()]}, % funkcja startująca childa. Obowiazkowa. Chyba może być (powinno?) to tylko start_link
                      restart => permanent, % opcjonalnie i defaultowo. Może też być temporary (never restarted)

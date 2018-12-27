@@ -38,7 +38,7 @@ check() ->
 
 -spec start(pid()) -> pid().
 start(Pid) ->             % to jest wołane przez proces nadrzedny
-    io:format("seneh_watch starting...~nprocess: ~p~nsupervisor: ~p~n", [self(), Pid]),
+    seneh_log:log_normal("seneh_watch starting...~nprocess: ~p~nsupervisor: ~p~n", [self(), Pid]),
     gen_server:start_link(
         {local, ?MODULE},   % locally/globaly regisered under the name ?MODULE
         ?MODULE,            % nazwa modułu, w którym są funkcje callback - zwykle ten sam po prostu
@@ -69,18 +69,19 @@ terminate(terminated, State) ->
     receive
         {WatchdogPid, terminated} -> ok
     after 1000 ->
-        io:format("Watchdog is unavailable. We quit anyway...", [])
+        seneh_log:log_normal("Watchdog is unavailable. We quit anyway...", [])
     end,
     nothing_else_to_do.
 
 patrol() ->
-    lists:map(fun({Cmd, Tunel}) ->
-                    case find_process(Tunel) of
-                        nomatch -> os:cmd(Cmd),
-                                   Tunel ++ " restart";
-                        _Match  -> Tunel ++ " ok"
-                    end
-                  end, ?S2_TUNEL).
+    Checks = lists:map(fun({Cmd, Tunel}) ->
+                         case find_process(Tunel) of
+                             nomatch -> os:cmd(Cmd),
+                                        Tunel ++ " restart";
+                             _Match  -> Tunel ++ " ok"
+                         end
+                       end, ?S2_TUNEL),
+    seneh_log:log_normal("~p", [Checks]).
 
 find_process(Process) ->
     string:find(os:cmd(?PS_CMD), Process).

@@ -1,0 +1,2 @@
+-define(LOG_FILE, "/tmp/seneh_log").
+-define(LOGGER_BUS, logger).
