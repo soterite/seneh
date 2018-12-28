@@ -1,4 +1,5 @@
 -module(seneh_watch).
+-include("./seneh_hdr.hrl").
 
 -export([start/1,
          init/1,
@@ -17,14 +18,17 @@
 -record(state, {eventHandler_pid, watchdog_pid}).
 
 -define(FREQ, 1000 * 60 * 59).
--define(PS_CMD, "ps -xo cmd").
--define(S2_TUNEL, [
-{"ssh -o TCPKeepAlive=yes -N -R 19721:localhost:8080 mroq@s2.mydevil.net &",
- "19721:localhost:8080"},
-{"ssh -o TCPKeepAlive=yes -N -R 19722:localhost:6600 mroq@s2.mydevil.net &",
- "19722:localhost:6600"},
-{"ssh -o TCPKeepAlive=yes -N -R 19723:localhost:22 mroq@s2.mydevil.net &",
- "19723:localhost:22"}]).
+-define(PROCESSES, #process_table{
+                        content = [
+                            #process{name = "mpd tunnel",
+                                     start_cmd = "ssh -o TCPKeepAlive=yes -N -R 19721:localhost:8080 mroq@s2.mydevil.net &",
+                                     activity_indicator = "19721:localhost:8080"},
+                            #process{name = "mpd admin tunnel",
+                                     start_cmd = "ssh -o TCPKeepAlive=yes -N -R 19722:localhost:6600 mroq@s2.mydevil.net &",
+                                     activity_indicator = "19722:localhost:6600"},
+                            #process{name = "ssh tunnel",
+                                     start_cmd = "ssh -o TCPKeepAlive=yes -N -R 19723:localhost:22 mroq@s2.mydevil.net &",
+                                     activity_indicator = "19723:localhost:22"}]}).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% API %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 shutdown() ->
@@ -74,17 +78,17 @@ terminate(terminated, State) ->
     nothing_else_to_do.
 
 patrol() ->
-    Checks = lists:map(fun({Cmd, Tunel}) ->
-                         case find_process(Tunel) of
-                             nomatch -> os:cmd(Cmd),
-                                        Tunel ++ " restart";
-                             _Match  -> Tunel ++ " ok"
+    Checks = lists:map(fun(Process) ->
+                         case find_process(Process#process.activity_indicator) of
+                             nomatch -> os:cmd(Process#process.start_cmd),
+                                        Process#process.name ++ " restart";
+                             _Match  -> Process#process.name ++ " ok"
                          end
-                       end, ?S2_TUNEL),
+                       end, ?PROCESSES#process_table.content),
     seneh_log:log_normal("~p", [Checks]).
 
-find_process(Process) ->
-    string:find(os:cmd(?PS_CMD), Process).
+find_process(Indicator) ->
+    string:find(os:cmd(?PROCESSES#process_table.ps_CMD), Indicator).
 
 animate_watchdog(Pid) ->
     receive
