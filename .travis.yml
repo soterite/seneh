@@ -1,3 +1,4 @@
 language: erlang
 otp_release:
   - 21.0
+script: "rebar3 eunit && rebar3 ct"
