@@ -88,10 +88,9 @@ find_process(Process) ->
 
 animate_watchdog(Pid) ->
     receive
-        {Pid, terminate} -> io:format("Watchdog goes sleeping! pid:~p~n", [self()]),
+        {Pid, terminate} -> seneh_log:log_normal("Watchdog goes sleeping! pid:~p~n", [self()]),
                             Pid ! {self(), terminated}
     after ?FREQ ->
-        Effects = ?MODULE:check(),
-        io:format("watchdog at ~p~p: ~p~n", [erlang:date(), erlang:time(), Effects]),
+        ?MODULE:check(),
         animate_watchdog(Pid)
     end.
