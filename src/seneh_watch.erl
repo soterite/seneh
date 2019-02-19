@@ -85,7 +85,7 @@ patrol() ->
                              _Match  -> Process#process.name ++ " ok"
                          end
                        end, ?PROCESSES#process_table.content),
-    seneh_log:log_normal("~p", [Checks]).
+    seneh_log:log_normal(string:join(Checks, "~n")).
 
 find_process(Indicator) ->
     string:find(os:cmd(?PROCESSES#process_table.ps_CMD), Indicator).

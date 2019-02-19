@@ -6,3 +6,5 @@
                   activity_indicator}).
 -record(process_table, {content = [],
                         ps_CMD = "ps -xo cmd"}).
+-record(log_message, {format = "~p",
+                      data = []}).
