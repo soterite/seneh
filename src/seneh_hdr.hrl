@@ -1,5 +1,6 @@
 -define(LOG_FILE, "/tmp/seneh_log").
 -define(LOGGER_BUS, logger_bus).
+-define(HTTP_PORT, 8080).
 
 -record(process, {name,
                   start_cmd,

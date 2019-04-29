@@ -4,6 +4,7 @@
 %%%-------------------------------------------------------------------
 
 -module(seneh_app).
+-include("./seneh_hdr.hrl").
 
 -behaviour(application).
 
@@ -16,7 +17,14 @@
 
 start(_StartType, _StartArgs) ->
     seneh_log:start_logger(),
-    seneh_log:log_normal("seneh_app starting...~nNode name: ~p, Cookie: ~p~n", [node(), erlang:get_cookie()]),
+    seneh_log:log_normal("seneh_app starting...~nNode name: ~p, Cookie: ~p~n, HTTP: ~p~n", [node(), erlang:get_cookie(), ?HTTP_PORT]),
+    Dispatch = cowboy_router:compile([
+        {'_', [{"/", web_watch_handler, []}]}
+    ]),
+
+    {ok, _} = cowboy:start_clear(my_http_listener,
+                                 [{port, ?HTTP_PORT}],
+                                 #{env => #{dispatch => Dispatch}}),
     seneh_sup:start_link().
 
 %%--------------------------------------------------------------------
