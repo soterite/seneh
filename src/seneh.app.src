@@ -11,7 +11,7 @@
                  ]},
   {env,[]},
   {modules, [seneh_app, seneh_sup, seneh_watch]},
-  {maintainers, []},
+  {maintainers, ["Krystian Więcek"]},
   {licenses, []},
   {links, []}
  ]}.

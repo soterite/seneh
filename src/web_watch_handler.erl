@@ -1,6 +1,6 @@
 -module(web_watch_handler).
 -include("./seneh_hdr.hrl").
--export([init/2]).
+-export([init/2, terminate/3]).
 
 init(Req0, State) ->
     seneh_watch:check(),
@@ -10,3 +10,6 @@ init(Req0, State) ->
         Tail,
         Req0),
     {ok, Req, State}.
+
+terminate(_Reason, _Req, _State) -> % to jest opcjonalne
+    ok.

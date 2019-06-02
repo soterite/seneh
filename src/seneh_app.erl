@@ -18,9 +18,20 @@
 start(_StartType, _StartArgs) ->
     seneh_log:start_logger(),
     seneh_log:log_normal("seneh_app starting...~nNode name: ~p, Cookie: ~p~n, HTTP: ~p~n", [node(), erlang:get_cookie(), ?HTTP_PORT]),
-    Dispatch = cowboy_router:compile([
-        {'_', [{"/", web_watch_handler, []}]}
-    ]),
+    Dispatch = cowboy_router:compile(
+        [                      % Routes
+         {                     % Host - also: {HostMatch, Constraints, PathList}
+          '_',                 % HostMatch
+          [                    % PathList
+           {                   % Path - also {PathMatch, Constraints, Handler, InitialState
+            "/",               % PathMatch
+            web_watch_handler, % Handler
+            []                 % InitialState
+           },
+           {"/watchdog", cowboy_static, {priv_file, seneh, "static/watchdog.html"}} % built-in handler for static files
+          ]
+         }
+        ]),
 
     {ok, _} = cowboy:start_clear(my_http_listener,
                                  [{port, ?HTTP_PORT}],
