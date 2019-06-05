@@ -5,9 +5,9 @@
   {mod, { seneh_app, []}},
   {applications, [kernel,
                   stdlib,
-                  % cowboy
                   cowlib,
-                  ranch
+                  ranch,
+                  cowboy
                  ]},
   {env,[]},
   {modules, [seneh_app, seneh_sup, seneh_watch]},
