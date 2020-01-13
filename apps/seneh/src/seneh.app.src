@@ -1,15 +1,17 @@
 {application, seneh,
- [{description, "An OTP application"},
+ [{description, "Seneh application"},
   {vsn, "0.1.0"},
   {registered, []},
   {mod, {seneh_app, []}},
-  {applications,
-   [kernel,
-    stdlib
-   ]},
+  {applications, [kernel,
+                  stdlib,
+                  cowboy,
+                  cowlib,
+                  ranch
+                 ]},
   {env,[]},
-  {modules, []},
-
-  {licenses, ["Apache 2.0"]},
+  {modules, [seneh_app, seneh_sup, seneh_watch]},
+  {maintainers, ["Krystian Więcek"]},
+  {licenses, []},
   {links, []}
  ]}.
