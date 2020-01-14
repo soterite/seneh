@@ -28,7 +28,6 @@ start(_StartType, _StartArgs) ->
          }
         ]),
 
-    io:format("staaaaaaaaart", []),
     {ok, _} = cowboy:start_clear(seneh_http_listener,
                                  [{port, ?HTTP_PORT}],
                                  #{env => #{dispatch => Dispatch}}),

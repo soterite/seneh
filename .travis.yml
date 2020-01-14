@@ -1,0 +1,6 @@
+language: erlang
+otp_release:
+  - 19.3
+  - 20.3
+  - 21.2
+script: "rebar3 report && rebar3 eunit && rebar3 ct"
