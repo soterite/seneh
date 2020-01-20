@@ -1,10 +1,11 @@
 {application, seneh,
- [{description, "Watchdog application"},
+ [{description, "Seneh application"},
   {vsn, "0.1.0"},
   {registered, []},
-  {mod, { seneh_app, []}},
+  {mod, {seneh_app, []}},
   {applications, [kernel,
                   stdlib,
+                  cowboy,
                   cowlib,
                   ranch,
                   cowboy

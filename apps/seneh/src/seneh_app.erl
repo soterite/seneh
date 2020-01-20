@@ -8,12 +8,7 @@
 
 -behaviour(application).
 
-%% Application callbacks
 -export([start/2, stop/1]).
-
-%%====================================================================
-%% API
-%%====================================================================
 
 start(_StartType, _StartArgs) ->
     seneh_log:start_logger(),
@@ -33,7 +28,7 @@ start(_StartType, _StartArgs) ->
          }
         ]),
 
-    {ok, _} = cowboy:start_clear(my_http_listener,
+    {ok, _} = cowboy:start_clear(seneh_http_listener,
                                  [{port, ?HTTP_PORT}],
                                  #{env => #{dispatch => Dispatch}}),
     seneh_sup:start_link().
@@ -42,6 +37,4 @@ start(_StartType, _StartArgs) ->
 stop(_State) ->
     ok.
 
-%%====================================================================
-%% Internal functions
-%%====================================================================
+%% internal functions

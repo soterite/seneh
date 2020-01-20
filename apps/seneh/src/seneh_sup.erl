@@ -7,25 +7,25 @@
 
 -behaviour(supervisor).
 
-%% API
 -export([start_link/0]).
 
-%% Supervisor callbacks
 -export([init/1]).
 
 -define(SERVER, ?MODULE).
 
-%%====================================================================
-%% API functions
-%%====================================================================
-
 start_link() ->
-    seneh_log:log_normal("seneh_sup starting...~n"),
+    io:format("Seneh supervisor starting...", []),
     supervisor:start_link({local, ?SERVER}, ?MODULE, []).
 
-%%====================================================================
-%% Supervisor callbacks
-%%====================================================================
+%% sup_flags() = #{strategy => strategy(),         % optional
+%%                 intensity => non_neg_integer(), % optional
+%%                 period => pos_integer()}        % optional
+%% child_spec() = #{id => child_id(),       % mandatory
+%%                  start => mfargs(),      % mandatory
+%%                  restart => restart(),   % optional
+%%                  shutdown => shutdown(), % optional
+%%                  type => worker(),       % optional
+%%                  modules => modules()}   % optional
 
 %% Child :: {Id,StartFunc,Restart,Shutdown,Type,Modules}
 init([]) ->
@@ -45,7 +45,4 @@ init([]) ->
                  period => 1},          % w jednej sekundzie (MaxT).
 
     {ok, { SupFlags, [WatcherChild]} }.
-
-%%====================================================================
-%% Internal functions
-%%====================================================================
+%% internal functions
