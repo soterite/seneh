@@ -20,15 +20,17 @@
 -define(FREQ, 1000 * 60 * 59).
 -define(PROCESSES, #process_table{
                         content = [
-                            #process{name = "mpd tunnel",
-                                     start_cmd = "ssh -o TCPKeepAlive=yes -N -R 19721:localhost:8080 mroq@s2.mydevil.net &",
-                                     activity_indicator = "19721:localhost:8080"},
-                            #process{name = "mpd admin tunnel",
-                                     start_cmd = "ssh -o TCPKeepAlive=yes -N -R 19722:localhost:6600 mroq@s2.mydevil.net &",
-                                     activity_indicator = "19722:localhost:6600"},
-                            #process{name = "ssh tunnel",
-                                     start_cmd = "ssh -o TCPKeepAlive=yes -N -R 19723:localhost:22 mroq@s2.mydevil.net &",
-                                     activity_indicator = "19723:localhost:22"}]}).
+                            %% #process{name = "mpd tunnel",
+                            %%          start_cmd = "ssh -o TCPKeepAlive=yes -N -R 19721:localhost:8080 mroq@s2.mydevil.net &",
+                            %%          activity_indicator = "19721:localhost:8080"},
+                            %% #process{name = "mpd admin tunnel",
+                            %%          start_cmd = "ssh -o TCPKeepAlive=yes -N -R 19722:localhost:6600 mroq@s2.mydevil.net &",
+                            %%          activity_indicator = "19722:localhost:6600"},
+                            %% #process{name = "ssh tunnel",
+                            %%          start_cmd = "ssh -o TCPKeepAlive=yes -N -R 19723:localhost:22 mroq@s2.mydevil.net &",
+                            %%          activity_indicator = "19723:localhost:22"}
+                        ]
+}).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% API %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 shutdown() ->

@@ -1,1 +1,2 @@
-* TODO Provide release build instead of shell initialization
+* DONE Provide release build instead of shell initialization
+  CLOSED: [2020-01-23 Thu 12:20]

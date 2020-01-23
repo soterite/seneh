@@ -1,0 +1,39 @@
+<seneh_application>
+  <watchers>
+    <watcher type="process">
+      <name>Process Watcher</name>
+      <occurence>
+        <period>3600000</period> <!-- 1000 * 60 * 59 of 1/1000 of a second (1 hour) -->
+      </occurence>
+      <processes>
+        <process>
+          <name>mpd tunnel</name>
+          <start_cmd>ssh -o TCPKeepAlive=yes -N -R 19721:localhost:8080 mroq@s2.mydevil.net &amp;</start_cmd>
+          <activity_indicator>19721:localhost:8080</activity_indicator>
+        </process>
+        <process>
+          <name>mpd admin tunnel</name>
+          <start_cmd>ssh -o TCPKeepAlive=yes -N -R 19722:localhost:6600 mroq@s2.mydevil.net &&amp;</start_cmd>
+          <activity_indicator>19722:localhost:6600</activity_indicator>
+        </process>
+        <process>
+          <name>ssh tunnel</name>
+          <start_cmd>ssh -o TCPKeepAlive=yes -N -R 19723:localhost:22 mroq@s2.mydevil.net &amp;</start_cmd>
+          <activity_indicator>19723:localhost:22</activity_indicator>
+        </process>
+      </processes>
+    </watcher>
+    <watcher type="file">
+      <name>File Watcher</name>
+      <occurence>
+        <period>60000</period> <!-- 1000 * 60 of 1/1000 of a second (1 minute) -->
+      </occurence>
+      <files>
+        <file>
+          <name>seneh configuration</name>
+          <url>file:///home/ekrywie/.seneh/configuration.xml</url>
+        </file>
+      </files>
+    </watcher>
+  </watchers>
+</seneh_application>

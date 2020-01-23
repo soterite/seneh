@@ -1,0 +1,12 @@
+* TODO MR-1 - Introduce xml/json configuration for seneh_watch worker [1/4]
+    - [X] denk über xml Konfiguration
+    - [ ] seneh_configuration worker Implementation
+        To powinno
+      - sparsować xmla na żądanie
+      - oferować nową konfigurację watcherowi
+    - [ ] seneh file watcher
+      - to powinno sprawdzać co jakiś czas, czy zasób (plik) się zmienił
+      - w razie zmiany powinno zawiadomić seneh configuration, że plik się zmienił
+    - [ ] seneh app powinien:
+      - wzbudzić i utrzymywać seneh file watchera
+      - wzbudzić i utrzymywać seneh configuration workera

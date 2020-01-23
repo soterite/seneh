@@ -21,12 +21,3 @@ Architecture
                 |                                   |
                 V       v---------------------------'
          seneh_watch worker
-
-
-TODO
-----
-
-- MR-1 - Introduce xml/json configuration for seneh_watch worker
-    - xml/json configuration
-    - configuration_watcher (?) for updating and restarting changes in configuration
--
