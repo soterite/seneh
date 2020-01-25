@@ -1,4 +1,5 @@
 -define(LOG_FILE, "/tmp/seneh_log").
+-define(USER_CONFIG_FILE, "/home/mroq/.seneh/configuration.xml").
 -define(LOGGER_BUS, logger_bus).
 -define(HTTP_PORT, 8080).
 
@@ -9,3 +10,6 @@
                         ps_CMD = "ps -xo cmd"}).
 -record(log_message, {format = "~p",
                       data = []}).
+-record(process_watcher, {name,
+                          period,
+                          processes = #process_table{}}).

@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <seneh_application>
   <watchers>
     <watcher type="process">
@@ -13,7 +14,7 @@
         </process>
         <process>
           <name>mpd admin tunnel</name>
-          <start_cmd>ssh -o TCPKeepAlive=yes -N -R 19722:localhost:6600 mroq@s2.mydevil.net &&amp;</start_cmd>
+          <start_cmd>ssh -o TCPKeepAlive=yes -N -R 19722:localhost:6600 mroq@s2.mydevil.net &amp;</start_cmd>
           <activity_indicator>19722:localhost:6600</activity_indicator>
         </process>
         <process>

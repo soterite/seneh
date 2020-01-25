@@ -1,5 +1,8 @@
 -module(seneh_configuration).
 -include("./seneh_hdr.hrl").
+-include_lib("xmerl/include/xmerl.hrl").
+
+-record(state, {process_watcher}).
 
 -behaviour(gen_server).
 
@@ -11,7 +14,8 @@
         ,handle_cast/2
         ,terminate/2]).
 
--export([status_call/0
+-export([reload/0
+        ,get_state/0
         ]).
 
 % start
@@ -33,21 +37,54 @@ stop() ->
     gen_server:stop(?MODULE).
 
 % requests
-status_call() ->
+get_state() ->
     gen_server:call(?MODULE, status).
+
+reload() ->
+    gen_server:cast(?MODULE, reload).
 
 % modul
 init(_what) ->
     io:format("init: ~p", [_what]),
-    NewState = [],
-    {ok, NewState}.
+    seneh_log:log_normal("Seneh configuration process starting..."),
+    State = #state{},
+    {ok, State}.
 
 terminate(Reason, State) ->
-    io:format("stop: ~p~n ~p", [Reason, State]).
+    seneh_log:log_normal("stop: ~p~n ~p", [Reason, State]).
 
-handle_call(_,_,_) ->
-    io:format("Robie", []),
-    {reply, "call", []}.
+handle_call(status,_,State) ->
+    {reply, State, State}.
 
-handle_cast(_,_) ->
-    {noreply, "cast", []}.
+handle_cast(reload, State) ->
+    seneh_log:log_normal("Seneh configuration reloading..."),
+    Config = parse_xml(),
+    [ProcessWatcher|_] = xmerl_xpath:string("//watcher[@type='process'][1]", Config),
+    %% Processes = lists:map(fun(Process) ->
+    %%                         #process{name = get_text_val("./name/text()", Process)
+    %%                                , start_cmd = get_text_val("./start_cmd/text()", Process)
+    %%                                , activity_indicator = get_text_val("./activity_indicator/text()", Process)}
+    %%                       end, xmerl_xpath:string("./processes", ProcessWatcher)),
+    Processes = lists:map(fun(Process) ->
+                            #process{name = get_text_val("./name/text()", Process)
+                                   , start_cmd = get_text_val("./start_cmd/text()", Process)
+                                   , activity_indicator = get_text_val("./activity_indicator/text()", Process)}
+
+                          end, xmerl_xpath:string("./processes", ProcessWatcher)),
+
+    NewState = State#state{process_watcher = #process_watcher{
+        name = get_text_val("./name/text()", ProcessWatcher)
+      , period = get_text_val("./occurence/period/text()", ProcessWatcher)
+      , processes = #process_table{content = Processes}
+        }},
+    {noreply, NewState}.
+
+
+% xml parser
+parse_xml() ->
+    {Config, _} = xmerl_scan:file(?USER_CONFIG_FILE),
+    Config.
+
+get_text_val(XPath, Element) ->
+    [#xmlText{value=Value}] = xmerl_xpath:string(XPath, Element),
+    Value.

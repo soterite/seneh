@@ -10,3 +10,4 @@
     - [ ] seneh app powinien:
       - wzbudzić i utrzymywać seneh file watchera
       - wzbudzić i utrzymywać seneh configuration workera
+* TODO MR-2 - zrobić sprawdzanie konfiga schemą xsd
