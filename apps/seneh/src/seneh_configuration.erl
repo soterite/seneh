@@ -61,27 +61,34 @@ handle_cast(reload, State) ->
 
     Config = parse_xml(),
 
-    [ProcessWatcher|_] = xmerl_xpath:string("//watcher[@type='process'][1]", Config),
-    Processes = lists:map(fun(Process) ->
-                            #process{name = get_text_val("./name/text()", Process)
-                                   , start_cmd = get_text_val("./start_cmd/text()", Process)
-                                   , activity_indicator = get_text_val("./activity_indicator/text()", Process)}
-                          end, xmerl_xpath:string("./processes/process", ProcessWatcher)),
+    try
 
-    [FileWatcher|_] = xmerl_xpath:string("//watcher[@type='file'][1]", Config),
-    Files = lists:map(fun(File) ->
-                            #file{name = get_text_val("./name/text()", File)
-                                , path = get_text_val("./url/text()", File)}
-                          end, xmerl_xpath:string("./files/file", FileWatcher)),
+        [ProcessWatcher|_] = xmerl_xpath:string("//watcher[@type='process'][1]", Config),
+        Processes = lists:map(fun(Process) ->
+                                #process{name = get_text_val("./name/text()", Process)
+                                       , start_cmd = get_text_val("./start_cmd/text()", Process)
+                                       , activity_indicator = get_text_val("./activity_indicator/text()", Process)}
+                              end, xmerl_xpath:string("./processes/process", ProcessWatcher)),
 
-    NewState = State#state{process_watcher = #process_watcher{name = get_text_val("./name/text()", ProcessWatcher)
-                                                            , period = get_text_val("./occurence/period/text()", ProcessWatcher)
-                                                            , processes = #process_table{content = Processes}},
-                           file_watcher = #file_watcher{name = get_text_val("./name/text()", FileWatcher)
-                                                      , period = get_text_val("./occurence/period/text()", FileWatcher)
-                                                      , files = #file_table{content = Files}}},
+        [FileWatcher|_] = xmerl_xpath:string("//watcher[@type='file'][1]", Config),
+        Files = lists:map(fun(File) ->
+                                #file{name = get_text_val("./name/text()", File)
+                                    , path = get_text_val("./ul/text()", File)}
+                              end, xmerl_xpath:string("./files/file", FileWatcher)),
 
-    {noreply, NewState}.
+        NewState = State#state{process_watcher = #process_watcher{name = get_text_val("./name/text()", ProcessWatcher)
+                                                                , period = get_text_val("./occurence/period/text()", ProcessWatcher)
+                                                                , processes = #process_table{content = Processes}},
+                               file_watcher = #file_watcher{name = get_text_val("./name/text()", FileWatcher)
+                                                          , period = get_text_val("./occurence/period/text()", FileWatcher)
+                                                          , files = #file_table{content = Files}}},
+        seneh_log:log_normal("Seneh configuration file parsed."),
+        {noreply, NewState}
+    catch
+        _:_ -> seneh_log:log_normal("Abort. Configuration file parsing errors."),
+             {noreply, State}             %% We want to maintan currently parsed configuration in case the new one is not parseable
+    end.
+
 
 
 % xml parser
