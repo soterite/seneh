@@ -2,7 +2,7 @@
 -include("./seneh_hdr.hrl").
 -include_lib("xmerl/include/xmerl.hrl").
 
--record(state, {process_watcher}).
+-record(state, {process_watcher, file_watcher}).
 
 -behaviour(gen_server).
 
@@ -58,31 +58,41 @@ handle_call(status,_,State) ->
 
 handle_cast(reload, State) ->
     seneh_log:log_normal("Seneh configuration reloading..."),
+
     Config = parse_xml(),
+
     [ProcessWatcher|_] = xmerl_xpath:string("//watcher[@type='process'][1]", Config),
-    %% Processes = lists:map(fun(Process) ->
-    %%                         #process{name = get_text_val("./name/text()", Process)
-    %%                                , start_cmd = get_text_val("./start_cmd/text()", Process)
-    %%                                , activity_indicator = get_text_val("./activity_indicator/text()", Process)}
-    %%                       end, xmerl_xpath:string("./processes", ProcessWatcher)),
     Processes = lists:map(fun(Process) ->
                             #process{name = get_text_val("./name/text()", Process)
                                    , start_cmd = get_text_val("./start_cmd/text()", Process)
                                    , activity_indicator = get_text_val("./activity_indicator/text()", Process)}
+                          end, xmerl_xpath:string("./processes/process", ProcessWatcher)),
 
-                          end, xmerl_xpath:string("./processes", ProcessWatcher)),
+    [FileWatcher|_] = xmerl_xpath:string("//watcher[@type='file'][1]", Config),
+    Files = lists:map(fun(File) ->
+                            #file{name = get_text_val("./name/text()", File)
+                                , path = get_text_val("./url/text()", File)}
+                          end, xmerl_xpath:string("./files/file", FileWatcher)),
 
-    NewState = State#state{process_watcher = #process_watcher{
-        name = get_text_val("./name/text()", ProcessWatcher)
-      , period = get_text_val("./occurence/period/text()", ProcessWatcher)
-      , processes = #process_table{content = Processes}
-        }},
+    NewState = State#state{process_watcher = #process_watcher{name = get_text_val("./name/text()", ProcessWatcher)
+                                                            , period = get_text_val("./occurence/period/text()", ProcessWatcher)
+                                                            , processes = #process_table{content = Processes}},
+                           file_watcher = #file_watcher{name = get_text_val("./name/text()", FileWatcher)
+                                                      , period = get_text_val("./occurence/period/text()", FileWatcher)
+                                                      , files = #file_table{content = Files}}},
+
     {noreply, NewState}.
 
 
 % xml parser
 parse_xml() ->
-    {Config, _} = xmerl_scan:file(?USER_CONFIG_FILE),
+    ConfigFile = case filelib:is_file(?USER_CONFIG_FILE) of
+                    true    -> ?USER_CONFIG_FILE;
+                    false   -> {ok, CWD} = file:get_cwd(),
+                               lists:concat([CWD, ?DEFAULT_CONFIG_FILE])
+                 end,
+
+    {Config, _} = xmerl_scan:file(ConfigFile),
     Config.
 
 get_text_val(XPath, Element) ->
