@@ -29,6 +29,12 @@ start_link() ->
 
 %% Child :: {Id,StartFunc,Restart,Shutdown,Type,Modules}
 init([]) ->
+    Configuration = #{id     => configuration,
+                     start  => {seneh_configuration, start_link, []},
+                     restart => permanent,
+                     shutdown => 5000,
+                     type => worker,
+                     modules => [seneh_configuration]},
 
     WatcherChild = #{id     => watcher, % to jest wewnetrzny identyfikator supervisora - Obowiazkowy
                      start  => {seneh_watch, start, [self()]}, % funkcja startująca childa. Obowiazkowa. Chyba może być (powinno?) to tylko start_link
@@ -44,5 +50,5 @@ init([]) ->
                  intensity => 1,        % dziiecko moze sie maksymalnie zrestartowac tyle razy (MaxR)
                  period => 1},          % w jednej sekundzie (MaxT).
 
-    {ok, { SupFlags, [WatcherChild]} }.
+    {ok, { SupFlags, [Configuration, WatcherChild]} }.
 %% internal functions
