@@ -3,12 +3,16 @@
   {vsn, "0.1.0"},
   {registered, []},
   {mod, {seneh_app, []}},
-  {applications, [kernel,
-                  stdlib,
-                  cowboy,
-                  cowlib,
-                  ranch,
-                  cowboy
+  {applications, [kernel
+                , stdlib
+                , cowboy
+                , cowlib
+                , ranch
+                , cowboy
+                , xmerl
+                , sasl          % for observer functionality
+                , runtime_tools          % for observer functionality
+                , observer          % for observer functionality
                  ]},
   {env,[]},
   {modules, [seneh_app, seneh_sup, seneh_watch]},
